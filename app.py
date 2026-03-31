@@ -8,7 +8,6 @@ DB_NAME = 'portfolio.db'
 
 def init_db():
     """Initialize the database and create the contacts table if it doesn't exist."""
-    # Using 'with' ensures the database file is never locked, even if the app crashes
     with sqlite3.connect(DB_NAME) as conn:
         cursor = conn.cursor()
         cursor.execute('''
@@ -29,13 +28,22 @@ init_db()
 
 @app.route('/')
 def index():
-    # Serves your index.html file (Make sure index.html is inside a 'templates' folder!)
-    return render_template('index.html')
+    # FIX: Fetch submissions from the database and pass them to index.html 
+    # so they show up immediately when the page loads!
+    try:
+        with sqlite3.connect(DB_NAME, timeout=10) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM contacts ORDER BY created_at DESC")
+            submissions = [dict(row) for row in cursor.fetchall()]
+    except Exception:
+        submissions = []
+        
+    return render_template('index.html', submissions=submissions)
 
 @app.route('/submit', methods=['POST'])
 def submit():
     try:
-        # Get JSON data sent from your frontend script.js
         data = request.get_json()
         
         name = data.get('name')
@@ -43,14 +51,11 @@ def submit():
         subject = data.get('subject')
         message = data.get('message')
 
-        # Basic validation to ensure no empty messages are sent
         if not all([name, email, subject, message]):
             return jsonify({"status": "error", "message": "All fields are required!"}), 400
 
-        # Insert into database safely using 'with' and a timeout to prevent locks
         with sqlite3.connect(DB_NAME, timeout=10) as conn:
             cursor = conn.cursor()
-            # We don't insert 'created_at' because the database does it automatically now
             cursor.execute("""
                 INSERT INTO contacts (name, email, subject, message)
                 VALUES (?, ?, ?, ?)
@@ -68,15 +73,14 @@ def submit():
 
 @app.route('/api/submissions', methods=['GET'])
 def get_submissions():
-    """Endpoint to view all submissions (I saw this in your logs)"""
+    """Endpoint to view all submissions"""
     try:
         with sqlite3.connect(DB_NAME, timeout=10) as conn:
-            conn.row_factory = sqlite3.Row # This makes rows behave like dictionaries
+            conn.row_factory = sqlite3.Row 
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM contacts ORDER BY created_at DESC")
             rows = cursor.fetchall()
             
-            # Convert rows to a list of dictionaries to send as JSON
             submissions = [dict(row) for row in rows]
             
         return jsonify(submissions), 200
@@ -86,5 +90,4 @@ def get_submissions():
         return jsonify({"status": "error", "message": "Could not fetch submissions."}), 500
 
 if __name__ == '__main__':
-    # debug=True automatically restarts the server when you save changes
     app.run(debug=True, port=5000)

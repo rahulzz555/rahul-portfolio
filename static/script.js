@@ -232,7 +232,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!entriesList) return;
 
     try {
-      const res = await fetch("/api/submissions");
+      // FIX: Added cache-busting (?t=...) and cache: 'no-store' so the browser 
+      // doesn't load a cached version of the messages!
+      const res = await fetch("/api/submissions?t=" + new Date().getTime(), { cache: 'no-store' });
       const data = await res.json();
 
       entriesList.innerHTML = "";
@@ -260,6 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Initial load
   loadEntries();
 
   // =========================
@@ -327,8 +330,8 @@ document.addEventListener("DOMContentLoaded", () => {
           // Show success popup
           showSuccessPopup();
 
-          // Reload the entries list to show the new message
-          loadEntries();
+          // Reload the entries list to show the new message instantly
+          await loadEntries();
         } else {
           alert(data.message || "Failed to send message.");
         }
@@ -338,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = "Send Message"; // Reset button text
+          submitBtn.textContent = "Initialize Transfer"; // Reset button text
         }
       }
     });
