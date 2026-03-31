@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rahul Portfolio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- Background Effects -->
+  <canvas id="matrixCanvas" class="matrix-canvas"></canvas>
+  <div class="noise"></div>
+  <div class="spotlight" id="spotlight"></div>
+  <div class="custom-cursor" id="cursor"></div>
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- ========================================== -->
+  <!-- SYSTEM OVERRIDE LOADER (Self-Contained)    -->
+  <!-- ========================================== -->
+  <style>
+    #systemOverride {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #050505;
+      z-index: 999999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Courier New', Courier, monospace;
+      color: #00ffaa;
+    }
+    .system-box {
+      border: 1px solid #004422;
+      padding: 40px;
+      border-radius: 12px;
+      background: #0a0a0a;
+      width: 80%;
+      max-width: 500px;
+      box-shadow: 0 0 30px rgba(0, 255, 170, 0.1);
+    }
+    .override-title {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+      letter-spacing: 2px;
+    }
+    .override-sub {
+      font-size: 14px;
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+    .override-bar {
+      width: 100%;
+      height: 12px;
+      background-color: #002211;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+    #overrideFill {
+      width: 0%;
+      height: 100%;
+      background-color: #00ffaa;
+      box-shadow: 0 0 10px #00ffaa;
+      transition: width 0.1s linear;
+    }
+    #overridePercent {
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+
+  <div class="system-override" id="systemOverride">
+    <div class="system-box">
+      <div class="override-title">SYSTEM OVERRIDE</div>
+      <div class="override-sub">Injecting Neural Modules...</div>
+      <div class="override-bar">
+        <div class="override-fill" id="overrideFill"></div>
+      </div>
+      <div class="override-percent" id="overridePercent">0%</div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let progress = 0;
+        const progressText = document.getElementById('overridePercent');
+        const progressBar = document.getElementById('overrideFill');
+        const preloader = document.getElementById('systemOverride');
+
+        if (preloader) {
+            let interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        preloader.style.transition = "opacity 0.6s ease";
+                        preloader.style.opacity = '0';
+                        setTimeout(() => { preloader.style.display = 'none'; }, 600);
+                    }, 400);
+                }
+                if (progressText) progressText.innerText = progress + '%';
+                if (progressBar) progressBar.style.width = progress + '%';
+            }, 120);
+        }
+    });
+  </script>
+  <!-- ========================================== -->
+
+  <!-- Navbar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="logo-wrap">
+        <div class="logo-circle">R</div>
+        <span class="logo-text">RAHUL.</span>
+      </a>
+
+      <nav class="desktop-nav">
+        <a href="#expertise">Expertise</a>
+        <a href="#skills">Skills</a>
+        <a href="#works">Works</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
+
+        <button class="theme-btn" id="themeToggle" aria-label="Toggle Theme">
+          <span id="themeIcon">☾</span>
+        </button>
+
+        <a href="#contact" class="cta-btn">Let's Talk</a>
+      </nav>
+
+      <button class="mobile-toggle" id="mobileToggle">☰</button>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#expertise">Expertise</a>
+      <a href="#skills">Skills</a>
+      <a href="#works">Works</a>
+      <a href="#experience">Experience</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero bg-grid">
+    <div class="hero-logs" id="heroLogs"></div>
+
+    <!-- Left widgets -->
+    <div class="hero-side left-side">
+      <div class="glass widget-card">
+        <div class="widget-top">
+          <span>Current Focus</span>
+          <span class="dot blue"></span>
+        </div>
+        <div class="widget-title">Distributed Systems & AI</div>
+        <div class="progress-line">
+          <div class="progress-fill pulse-a"></div>
+        </div>
+      </div>
+
+      <div class="glass widget-card">
+        <div class="widget-top">
+          <span>Location</span>
+          <span class="dot green"></span>
+        </div>
+        <div class="widget-title">India / Remote</div>
+        <div class="widget-sub">Global collaboration enabled</div>
+      </div>
+
+      <div class="glass widget-card">
+        <div class="widget-top">
+          <span>Availability</span>
+          <span class="dot orange"></span>
+        </div>
+        <div class="widget-title">Open for Projects</div>
+        <div class="widget-sub">Freelance · Product · Systems</div>
+      </div>
+    </div>
+
+    <!-- Right widgets -->
+    <div class="hero-side right-side">
+      <div class="glass widget-card">
+        <div class="widget-top">
+          <span>Core Stack</span>
+          <span class="dot purple"></span>
+        </div>
+        <div class="tech-cloud">
+          <span>REACT</span>
+          <span>NEXT</span>
+          <span>NODE</span>
+          <span>TYPESCRIPT</span>
+          <span>RUST</span>
+          <span>AWS</span>
+          <span>POSTGRES</span>
+          <span>DOCKER</span>
+        </div>
+      </div>
+
+      <div class="glass widget-card">
+        <div class="widget-top">
+          <span>Live Activity</span>
+          <span class="dot green pulse"></span>
+        </div>
+        <div class="activity-list">
+          <div><span></span> Pushing commits...</div>
+          <div><span></span> Optimizing assets...</div>
+          <div><span></span> Building systems...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Icons -->
+    <div class="floating-icon i1">&lt;/&gt;</div>
+    <div class="floating-icon i2">⚡</div>
+    <div class="floating-icon i3">⌘</div>
+    <div class="floating-icon i4">◉</div>
+    <div class="floating-icon i5">⟲</div>
+
+    <div class="hero-blur hero-blur-1"></div>
+    <div class="hero-blur hero-blur-2"></div>
+
+    <div class="hero-content">
+      <div class="hero-badge glass">
+        <span class="live-dot"></span>
+        SYSTEM STATUS: OPTIMAL
+      </div>
+
+      <p class="eyebrow">NEXT-GEN FULL STACK ENGINEER</p>
+
+      <h1 class="hero-title">
+        BUILDING <br />
+        DIGITAL <br />
+        BETTER.
+      </h1>
+
+      <p class="hero-desc">
+        Rahul — A 2nd-semester BCA student pushing the boundaries of modern web development through technical excellence.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#works" class="primary-btn">View Projects</a>
+        <a href="#contact" class="secondary-btn">Contact</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num">50+</div>
+          <div class="stat-label">Projects</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2.4k</div>
+          <div class="stat-label">Commits</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2 Years</div>
+          <div class="stat-label">Experience</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">99.9%</div>
+          <div class="stat-label">Uptime</div>
+        </div>
+      </div>
+
+      <div class="hero-code glass">
+<pre>
+const developer = "Rahul";
+const status = "BCA Student";
+const skills = ["React", "Node", "TS"];
+function buildFuture() {
+  console.log("Pushing boundaries...");
+}
+</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <section class="marquee-section">
+    <div class="marquee-track">
+      <div class="marquee-content">
+        <span>UI DESIGN ✦ FRONTEND DEV ✦ BACKEND SYSTEMS ✦ CLOUD ARCHITECTURE ✦ PRODUCT DESIGN ✦</span>
+        <span>UI DESIGN ✦ FRONTEND DEV ✦ BACKEND SYSTEMS ✦ CLOUD ARCHITECTURE ✦ PRODUCT DESIGN ✦</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Expertise -->
+  <section id="expertise" class="section section-soft">
+    <div class="section-head">
+      <p class="section-kicker">Expertise</p>
+      <h2>Built for speed, scale & visual precision.</h2>
+      <p>I create modern interfaces and backend systems with an obsession for performance, aesthetics, and maintainability.</p>
+    </div>
+
+    <div class="expertise-grid">
+      <div class="glass exp-card">
+        <div class="exp-icon">⌘</div>
+        <h3>Frontend Systems</h3>
+        <p>Pixel-perfect interfaces using React, TypeScript, motion systems, and design architecture.</p>
+      </div>
+      <div class="glass exp-card">
+        <div class="exp-icon">⚙</div>
+        <h3>Backend Engineering</h3>
+        <p>Scalable APIs, robust application logic, structured services, and production-first workflows.</p>
+      </div>
+      <div class="glass exp-card">
+        <div class="exp-icon">☁</div>
+        <h3>Cloud & Deployment</h3>
+        <p>Deployment pipelines, environment setup, optimization, and resilient full-stack delivery.</p>
+      </div>
+      <div class="glass exp-card">
+        <div class="exp-icon">◉</div>
+        <h3>Product Experience</h3>
+        <p>Strong visual systems, UX clarity, fast interactions, and polished micro-animations.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Terminal -->
+  <section class="terminal-section">
+    <div class="terminal-wrap">
+      <div class="terminal-head">
+        <span class="term-dot red"></span>
+        <span class="term-dot yellow"></span>
+        <span class="term-dot green"></span>
+        <span class="term-title">RAHUL_OS / terminal</span>
+      </div>
+      <div class="terminal-body" id="terminalBody">
+        <div>$ boot --portfolio</div>
+        <div>Initializing modern interface systems...</div>
+        <div>Loading neural modules...</div>
+        <div>Injecting performance layers...</div>
+        <div>Portfolio ready.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section id="skills" class="section">
+    <div class="section-head">
+      <p class="section-kicker">Skills</p>
+      <h2>Technical command across the stack.</h2>
+      <p>Production-ready tools for building modern, scalable and visually rich applications.</p>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-card glass">
+        <div class="skill-top"><span>React / Next.js</span><span>95%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:95%"></div></div>
+      </div>
+      <div class="skill-card glass">
+        <div class="skill-top"><span>TypeScript</span><span>90%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+      </div>
+      <div class="skill-card glass">
+        <div class="skill-top"><span>Node.js / Express</span><span>85%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+      </div>
+      <div class="skill-card glass">
+        <div class="skill-top"><span>Tailwind CSS</span><span>98%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:98%"></div></div>
+      </div>
+      <div class="skill-card glass">
+        <div class="skill-top"><span>PostgreSQL / MongoDB</span><span>80%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+      </div>
+      <div class="skill-card glass">
+        <div class="skill-top"><span>System Architecture</span><span>75%</span></div>
+        <div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Works -->
+  <section id="works" class="section works-section">
+    <div class="section-head">
+      <p class="section-kicker">Selected Works</p>
+      <h2>Experiments, systems & products.</h2>
+      <p>A showcase of concept-driven builds, advanced UI systems, and performance-focused engineering.</p>
+    </div>
+
+    <div class="works-grid">
+      <div class="project-card glass">
+        <div class="project-image">
+          <div class="scanline"></div>
+          <img src="https://picsum.photos/seed/neural/900/600" alt="Neural Nexus" referrerpolicy="no-referrer">
+          <div class="project-tags">
+            <span>Next.js</span>
+            <span>PyTorch</span>
+            <span>D3.js</span>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3>Neural Nexus</h3>
+          <p>AI & Machine Learning</p>
+        </div>
+      </div>
+
+      <div class="project-card glass">
+        <div class="project-image">
+          <div class="scanline"></div>
+          <img src="https://picsum.photos/seed/vortex/900/600" alt="Vortex Engine" referrerpolicy="no-referrer">
+          <div class="project-tags">
+            <span>Rust</span>
+            <span>WASM</span>
+            <span>WebGPU</span>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3>Vortex Engine</h3>
+          <p>Systems Engineering</p>
+        </div>
+      </div>
+
+      <div class="project-card glass">
+        <div class="project-image">
+          <div class="scanline"></div>
+          <img src="https://picsum.photos/seed/quantum/900/600" alt="Quantum Ledger" referrerpolicy="no-referrer">
+          <div class="project-tags">
+            <span>Solidity</span>
+            <span>React</span>
+            <span>Ethers.js</span>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3>Quantum Ledger</h3>
+          <p>Blockchain & DeFi</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack Strip -->
+  <section class="tech-strip">
+    <div class="tech-marquee">
+      <div class="tech-marquee-inner">
+        <span>React</span><span>Next.js</span><span>TypeScript</span><span>Node.js</span><span>PostgreSQL</span><span>Docker</span><span>AWS</span><span>Tailwind</span><span>Framer Motion</span><span>D3.js</span><span>Rust</span><span>WASM</span><span>WebGPU</span><span>Solidity</span><span>Firebase</span>
+        <span>React</span><span>Next.js</span><span>TypeScript</span><span>Node.js</span><span>PostgreSQL</span><span>Docker</span><span>AWS</span><span>Tailwind</span><span>Framer Motion</span><span>D3.js</span><span>Rust</span><span>WASM</span><span>WebGPU</span><span>Solidity</span><span>Firebase</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section id="experience" class="section">
+    <div class="section-head">
+      <p class="section-kicker">My Journey</p>
+      <h2>Professional path and technical milestones.</h2>
+      <p>Hands-on learning, open-source contribution, and building production-style systems while studying.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content glass">
+          <div class="timeline-top">
+            <div>
+              <h3>Full Stack Developer (Freelance)</h3>
+              <p>Independent</p>
+            </div>
+            <span>2023 - Present</span>
+          </div>
+          <p>Building production-ready web applications for startups. Focused on scalability, performance, and modern UI/UX patterns.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content glass">
+          <div class="timeline-top">
+            <div>
+              <h3>Open Source Contributor</h3>
+              <p>GitHub</p>
+            </div>
+            <span>2023 - Present</span>
+          </div>
+          <p>Contributing to high-impact open-source projects. Improving developer experience and building reusable UI components.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content glass">
+          <div class="timeline-top">
+            <div>
+              <h3>BCA Student (2nd Sem)</h3>
+              <p>Tech University</p>
+            </div>
+            <span>2024 - Present</span>
+          </div>
+          <p>Deep-diving into Computer Science fundamentals while maintaining a high GPA and building a robust technical portfolio.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="section section-soft">
+    <div class="contact-grid">
+      <div class="contact-left">
+        <p class="section-kicker">Contact</p>
+        <h2>Let's Create <br>Something Great.</h2>
+        <p class="contact-desc">
+          Have a project in mind or just want to say hi? Feel free to reach out. I'm always open to discussing new projects and creative ideas.
+        </p>
+
+        <div class="contact-info">
+          <div class="contact-box glass">
+            <div class="contact-icon">✉</div>
+            <div>
+              <small>Email Me</small>
+              <strong>hello@lumina.dev</strong>
+            </div>
+          </div>
+
+          <div class="contact-box glass">
+            <div class="contact-icon">⌘</div>
+            <div>
+              <small>Work with me</small>
+              <strong>Available for hire</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="socials">
+          <a href="#">GH</a>
+          <a href="#">IN</a>
+          <a href="#">TW</a>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- NEW COOL CONTACT FORM                      -->
+      <!-- ========================================== -->
+      <div class="contact-form-wrap glass">
+        <div class="form-header">
+          <span class="term-dot red"></span>
+          <span class="term-dot yellow"></span>
+          <span class="term-dot green"></span>
+          <span class="form-title">secure_channel // transmission</span>
+        </div>
+        
+        <form id="contact-form" class="cool-form">
+          <div class="form-row">
+            <div class="input-container">
+              <!-- placeholder=" " is required for the floating label CSS trick -->
+              <input type="text" id="name" name="name" required placeholder=" ">
+              <label for="name">Name</label>
+            </div>
+            <div class="input-container">
+              <input type="email" id="email" name="email" required placeholder=" ">
+              <label for="email">Email</label>
+            </div>
+          </div>
+          
+          <div class="input-container">
+            <input type="text" id="subject" name="subject" required placeholder=" ">
+            <label for="subject">Subject</label>
+          </div>
+          
+          <div class="input-container">
+            <textarea id="message" name="message" rows="4" required placeholder=" "></textarea>
+            <label for="message">Message</label>
+          </div>
+          
+          <button type="submit" id="submitBtn" class="cyber-btn">
+            <span>Initialize Transfer</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </form>
+      </div>
+      <!-- END NEW COOL CONTACT FORM -->
+
+    </div>
+  </section>
+
+  <!-- User Submitted Entries -->
+  <div class="submitted-entries glass">
+    <div class="submitted-head">
+      <h3>Submitted Messages</h3>
+      <p>Your submitted messages will appear here instantly.</p>
+    </div>
+    <div class="entries-list" id="entriesList">
+      {% if submissions %}
+        {% for entry in submissions %}
+        <div class="entry-card">
+          <div class="entry-top">
+            <h4>{{ entry.name }}</h4>
+            <span class="entry-time">{{ entry.created_at }}</span>
+          </div>
+          <div class="entry-email">{{ entry.email }}</div>
+          {% if entry.subject %}
+          <div class="entry-email"><strong>Subject:</strong> {{ entry.subject }}</div>
+          {% endif %}
+          <p class="entry-message">{{ entry.message }}</p>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-entry">
+          No messages yet. Your submitted message will appear here.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Success Popup -->
+  <div class="success-popup" id="successPopup">
+    <div class="success-card glass">
+      <div class="success-icon">✓</div>
+      <h3>Message Sent</h3>
+      <p>Your message has been received successfully.</p>
+      <button id="closeSuccess" type="button">Close</button>
+    </div>
+  </div>
+
+  <!-- Neural Assistant -->
+  <button class="assistant-btn" id="assistantBtn">◉</button>
+  <div class="assistant-panel" id="assistantPanel">
+    <div class="assistant-head">
+      <span>Neural Link v2.0</span>
+      <button id="closeAssistant">✕</button>
+    </div>
+    <div class="assistant-body">
+      <div class="assistant-msg bot">Neural Link Established. I am Rahul's AI Assistant. How can I help you today?</div>
+    </div>
+    <div class="assistant-input">
+      <input type="text" placeholder="Ask about Rahul..." id="assistantInput">
+      <button id="assistantSend">➜</button>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

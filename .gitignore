@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+
+# Database (CRITICAL: Do not upload your private messages!)
+*.db
+*.sqlite3
+portfolio.db
+
+# OS Files
+.DS_Store
